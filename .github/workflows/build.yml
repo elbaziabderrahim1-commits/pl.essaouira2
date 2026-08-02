@@ -26,7 +26,7 @@ jobs:
           channel: 'stable'
 
       - name: Create Android Files
-        run: flutter create .
+        run: flutter create . --project-name staff_manager --org com.example
 
       - name: Get dependencies
         run: flutter pub get
