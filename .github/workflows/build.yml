@@ -24,27 +24,18 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Rebuild Project Platform Structure
+      - name: Create Clean Android Structure
         run: |
-          # حفظ مجلد lib و pubspec
-          mkdir -p temp_store
-          cp -r lib pubspec.yaml temp_store/
-          
-          # إنشاء هيكل كامل ونظيف بدون تعارضات
-          rm -rf android lib
-          flutter create . --project-name staff_manager --org com.example --platforms android
-          
-          # استرجاع الكود الخاص بك
-          cp -r temp_store/* .
-          rm -rf temp_store
+          mkdir -p temp_lib
+          cp -r lib temp_lib/
+          flutter create . --project-name staff_manager --org com.example --platforms android --force
+          cp -r temp_lib/lib .
+          rm -rf temp_lib
 
-      - name: Configure Android Gradle Settings
+      - name: Fix Min SDK Version
         run: |
-          # رفع minSdkVersion لـ 21 لتوافق shared_preferences
-          sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle
-          # تفعيل الميزات الحديثة
-          echo "android.useAndroidX=true" >> android/gradle.properties
-          echo "android.enableJetifier=true" >> android/gradle.properties
+          find android/ -name "build.gradle*" -exec sed -i 's/minSdkVersion.*/minSdkVersion 21/g' {} +
+          find android/ -name "build.gradle*" -exec sed -i 's/minSdk = .*/minSdk = 21/g' {} +
 
       - name: Get Dependencies
         run: flutter pub get
