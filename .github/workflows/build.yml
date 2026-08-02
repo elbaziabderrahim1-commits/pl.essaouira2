@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p temp_lib
           cp -r lib temp_lib/
-          flutter create . --project-name staff_manager --org com.example --platforms android --force
+          flutter create . --project-name staff_manager --org com.example --platforms android --overwrite
           cp -r temp_lib/lib .
           rm -rf temp_lib
 
