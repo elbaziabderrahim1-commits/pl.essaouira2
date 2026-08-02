@@ -25,17 +25,22 @@ jobs:
           flutter-version: '3.19.x'
           channel: 'stable'
 
-      - name: Create Skeleton Project
+      - name: Generate Android Project
         run: |
           flutter create temp_app --project-name staff_manager --org com.example
           cp -r temp_app/android .
           rm -rf temp_app
 
+      - name: Fix Min SDK Version for shared_preferences
+        run: |
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle || true
+          sed -i 's/minSdkVersion 16/minSdkVersion 21/g' android/app/build.gradle || true
+
       - name: Get dependencies
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
