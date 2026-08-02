@@ -27,10 +27,10 @@ jobs:
 
       - name: Re-create Android project structure
         run: |
-          mkdir temp_code
-          cp -r lib pubspec.yaml temp_code/ 2>/dev/null || true
-          flutter create . --org com.example --project-name staff_manager
-          cp -r temp_code/* . 2>/dev/null || true
+          mkdir -p temp_code
+          cp -r lib pubspec.yaml temp_code/
+          flutter create . --org com.example --project-name staff_manager --force
+          cp -r temp_code/* .
           rm -rf temp_code
 
       - name: Get dependencies
