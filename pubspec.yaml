@@ -1,7 +1,6 @@
 name: staff_manager
-description: "A new Flutter project for staff management."
+description: "Staff Manager App"
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
