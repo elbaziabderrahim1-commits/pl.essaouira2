@@ -24,19 +24,13 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Generate Android project if missing
-        run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --org com.example --project-name staff_manager
-          fi
-
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build APK (Release)
-        run: flutter build apk --release --no-tree-shake-icons --build-custom-only=false
+      - name: Build Release APK
+        run: flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
