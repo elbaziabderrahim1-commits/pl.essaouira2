@@ -24,27 +24,17 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Generate Clean Android Platform
+      - name: Generate Android project if missing
         run: |
-          mkdir -p temp_lib
-          cp -r lib temp_lib/
-          flutter create --platforms=android .
-          cp -r temp_lib/lib .
-          rm -rf temp_lib
-
-      - name: Force Android SDK Versions (SDK 34 & MinSDK 21)
-        run: |
-          # تعديل minSdkVersion و compileSdkVersion إجبارياً لمنع أخطاء البناء
-          find android/ -name "build.gradle*" -exec sed -i 's/minSdkVersion.*/minSdkVersion 21/g' {} +
-          find android/ -name "build.gradle*" -exec sed -i 's/minSdk = .*/minSdk = 21/g' {} +
-          find android/ -name "build.gradle*" -exec sed -i 's/compileSdkVersion.*/compileSdkVersion 34/g' {} +
-          find android/ -name "build.gradle*" -exec sed -i 's/compileSdk = .*/compileSdk = 34/g' {} +
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --org com.example --project-name staff_manager
+          fi
 
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release --no-tree-shake-icons
+      - name: Build APK (Release)
+        run: flutter build apk --release --no-tree-shake-icons --build-custom-only=false
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
