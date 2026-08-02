@@ -25,13 +25,8 @@ jobs:
           flutter-version: '3.19.x'
           channel: 'stable'
 
-      - name: Re-create Android project structure
-        run: |
-          mkdir -p temp_code
-          cp -r lib pubspec.yaml temp_code/
-          flutter create . --org com.example --project-name staff_manager --force
-          cp -r temp_code/* .
-          rm -rf temp_code
+      - name: Create Android Files
+        run: flutter create .
 
       - name: Get dependencies
         run: flutter pub get
