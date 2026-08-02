@@ -13,36 +13,46 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.x'
           channel: 'stable'
 
-      - name: Generate Android Project
+      - name: Rebuild Project Platform Structure
         run: |
-          flutter create temp_app --project-name staff_manager --org com.example
-          cp -r temp_app/android .
-          rm -rf temp_app
+          # حفظ مجلد lib و pubspec
+          mkdir -p temp_store
+          cp -r lib pubspec.yaml temp_store/
+          
+          # إنشاء هيكل كامل ونظيف بدون تعارضات
+          rm -rf android lib
+          flutter create . --project-name staff_manager --org com.example --platforms android
+          
+          # استرجاع الكود الخاص بك
+          cp -r temp_store/* .
+          rm -rf temp_store
 
-      - name: Fix Min SDK Version for shared_preferences
+      - name: Configure Android Gradle Settings
         run: |
-          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle || true
-          sed -i 's/minSdkVersion 16/minSdkVersion 21/g' android/app/build.gradle || true
+          # رفع minSdkVersion لـ 21 لتوافق shared_preferences
+          sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle
+          # تفعيل الميزات الحديثة
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
 
-      - name: Get dependencies
+      - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build Release APK
         run: flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
